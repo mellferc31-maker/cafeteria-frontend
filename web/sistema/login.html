@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Ingresar</title>
+  <style>
+    :root {
+      --verde-oscuro: #26382E; --crema: #F5F1E9;
+      --verde-claro: #BFD9C3; --cafe-oscuro: #2C1B0E;
+      --marron: #4E342E; --crema-calida: #E8D5C4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--verde-oscuro);
+    }
+    .login-wrap { width: 100%; max-width: 400px; padding: 16px; }
+    .login-logo { text-align: center; margin-bottom: 28px; }
+    .login-logo h1 { font-family: Georgia, serif; font-size: 28px; color: var(--crema); }
+    .login-logo h1 span { color: var(--verde-claro); }
+    .login-logo p { font-size: 12px; color: var(--verde-claro); opacity: .7; margin-top: 5px; }
+    .login-card { background: var(--crema); border-radius: 14px; padding: 32px 28px; box-shadow: 0 16px 48px rgba(0,0,0,.4); }
+    .login-card h2 { font-size: 16px; font-weight: 600; color: var(--cafe-oscuro); margin-bottom: 22px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 12px; font-weight: 500; color: var(--marron); margin-bottom: 5px; }
+    input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--crema-calida); border-radius: 7px; font-size: 14px; color: var(--cafe-oscuro); background: #fff; }
+    input:focus { outline: none; border-color: var(--verde-claro); }
+    .btn-login { width: 100%; padding: 12px; background: var(--verde-oscuro); color: var(--crema); border: none; border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+    .btn-login:hover { opacity: .85; }
+    .error-msg { background: #FFF0EE; color: #9D2B12; border: 1px solid #FFCDD2; border-radius: 7px; padding: 10px 13px; font-size: 12px; margin-bottom: 14px; display: none; }
+    .login-footer { text-align: center; margin-top: 20px; }
+    .login-footer a { font-size: 12px; color: var(--verde-claro); text-decoration: none; opacity: .8; }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-logo">
+      <h1>Bruma <span>Café</span></h1>
+      <p>Panel de administración del personal</p>
+    </div>
+    <div class="login-card">
+      <h2>Ingresa tu cuenta</h2>
+      <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos.</div>
+      <div class="form-group">
+        <label for="username">Usuario</label>
+        <input type="text" id="username" placeholder="Tu nombre de usuario">
+      </div>
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      <button class="btn-login" onclick="ingresar()">Ingresar al sistema</button>
+    </div>
+    <div class="login-footer">
+      <a href="../index.html">← Volver al sitio público</a>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script>
+    if (getToken()) window.location.href = 'dashboard.html';
+    async function ingresar() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error-msg');
+      errorDiv.style.display = 'none';
+      if (!username || !password) {
+        errorDiv.textContent = 'Completa todos los campos.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      try {
+        const data = await login(username, password);
+        setToken(data.token);
+        const payload = JSON.parse(atob(data.token.split('.')[1]));
+        setRol(payload.rol || 'CAJERO');
+        setUsuario(payload.sub || username);
+        window.location.href = 'dashboard.html';
+      } catch(e) {
+        errorDiv.textContent = e.message;
+        errorDiv.style.display = 'block';
+      }
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') ingresar(); });
+  </script>
+</body>
+</html>

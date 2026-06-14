@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Dashboard</title>
+  <link rel="stylesheet" href="css/sistema.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
+    <span class="navbar-spacer"></span>
+    <span class="navbar-user" id="nav-usuario">—</span>
+    <span class="navbar-rol"  id="nav-rol">—</span>
+    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Principal</div>
+    <a href="dashboard.html" class="sidebar-item active">
+      <span class="sidebar-icon">⊞</span> Dashboard
+    </a>
+    <div class="sidebar-section">Operaciones</div>
+    <a href="ventas.html"    class="sidebar-item"><span class="sidebar-icon">🛒</span> Ventas</a>
+    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
+    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
+    <div class="sidebar-section">Abastecimiento</div>
+    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
+    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
+    <div class="sidebar-section">Finanzas</div>
+    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
+    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
+    <div class="sidebar-section">Administración</div>
+    <a href="usuarios.html" class="sidebar-item" id="link-usuarios">
+      <span class="sidebar-icon">👥</span> Usuarios
+    </a>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="main">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Resumen del día</div>
+
+    <!-- TARJETAS -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Ventas hoy</div>
+        <div class="value" id="total-ventas">—</div>
+        <div class="sub ok" id="cnt-ventas">cargando...</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Caja</div>
+        <div class="value" id="estado-caja">—</div>
+        <div class="sub" id="sub-caja">cargando...</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Productos</div>
+        <div class="value" id="total-productos">—</div>
+        <div class="sub" id="sub-productos">cargando...</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Gastos hoy</div>
+        <div class="value" id="total-gastos">—</div>
+        <div class="sub" id="sub-gastos">cargando...</div>
+      </div>
+    </div>
+
+    <!-- ÚLTIMAS VENTAS -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Últimas ventas del día</span>
+        <a href="ventas.html" class="btn btn-primary btn-sm">Ver todas</a>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Hora</th>
+            <th>Total</th>
+            <th>Método</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-ventas">
+          <tr>
+            <td colspan="5" style="text-align:center;padding:24px;color:#aaa;">
+              Cargando...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+
+    document.getElementById('nav-usuario').textContent = getUsuario() || '—';
+    document.getElementById('nav-rol').textContent     = getRol()     || '—';
+
+    if (getRol() !== 'ADMIN') {
+      document.getElementById('link-usuarios').style.display = 'none';
+    }
+
+    async function cargarDashboard() {
+      try {
+        const ventas = await Reportes.ventasHoy();
+        const total  = ventas.reduce((s, v) => s + (v.total || 0), 0);
+        document.getElementById('total-ventas').textContent = 'S/ ' + total.toFixed(2);
+        document.getElementById('cnt-ventas').textContent   = ventas.length + ' transacciones';
+        const tbody = document.getElementById('tabla-ventas');
+        if (!ventas.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:#aaa;">Sin ventas hoy</td></tr>';
+        } else {
+          tbody.innerHTML = ventas.slice(-5).reverse().map(v => `
+            <tr>
+              <td style="color:#888;">#${v.id}</td>
+              <td>${new Date(v.fecha).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}</td>
+              <td style="font-weight:600;">S/ ${v.total.toFixed(2)}</td>
+              <td>${v.metodoPago || '—'}</td>
+              <td><span class="badge ${v.estado==='ACTIVA'?'badge-ok':'badge-danger'}">${v.estado}</span></td>
+            </tr>`).join('');
+        }
+      } catch(e) { console.warn('Ventas:', e.message); }
+
+      try {
+        const caja = await Caja.estado();
+        document.getElementById('estado-caja').textContent = caja.abierta ? 'ABIERTA' : 'CERRADA';
+        const sub = document.getElementById('sub-caja');
+        sub.textContent = caja.abierta ? `Desde S/ ${caja.caja?.montoInicial || 0}` : 'Sin turno activo';
+        sub.className   = 'sub ' + (caja.abierta ? 'ok' : 'warn');
+      } catch(e) { console.warn('Caja:', e.message); }
+
+      try {
+        const prods = await Productos.listar();
+        const bajos = prods.filter(p => p.stock < 5).length;
+        document.getElementById('total-productos').textContent = prods.length;
+        const sp = document.getElementById('sub-productos');
+        sp.textContent = bajos > 0 ? `${bajos} con stock bajo` : 'Stock en orden';
+        sp.className   = 'sub ' + (bajos > 0 ? 'warn' : 'ok');
+      } catch(e) { console.warn('Productos:', e.message); }
+
+      try {
+        const total = await Reportes.totalGastos();
+        document.getElementById('total-gastos').textContent = 'S/ ' + (total || 0).toFixed(2);
+        document.getElementById('sub-gastos').textContent   = 'Total registrado';
+      } catch(e) { console.warn('Gastos:', e.message); }
+    }
+
+    cargarDashboard();
+  </script>
+
+</body>
+</html>
