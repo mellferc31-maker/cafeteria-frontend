@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Productos</title>
+  <link rel="stylesheet" href="css/sistema.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
+    <span class="navbar-spacer"></span>
+    <span class="navbar-user" id="nav-usuario">—</span>
+    <span class="navbar-rol"  id="nav-rol">—</span>
+    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
+  </nav>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">Principal</div>
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
+    <div class="sidebar-section">Operaciones</div>
+    <a href="ventas.html"    class="sidebar-item"><span class="sidebar-icon">🛒</span> Ventas</a>
+    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
+    <a href="productos.html" class="sidebar-item active"><span class="sidebar-icon">📦</span> Productos</a>
+    <div class="sidebar-section">Abastecimiento</div>
+    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
+    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
+    <div class="sidebar-section">Finanzas</div>
+    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
+    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
+    <div class="sidebar-section">Administración</div>
+    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-title">Productos</div>
+    <div class="page-sub">Gestiona el catálogo y el stock</div>
+
+    <div class="form-card">
+      <h3 id="form-titulo">Registrar producto</h3>
+      <input type="hidden" id="prod-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="prod-nombre" placeholder="Ej: Café americano">
+        </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select id="prod-categoria">
+            <option value="">Seleccionar...</option>
+            <option>Bebidas calientes</option>
+            <option>Bebidas frías</option>
+            <option>Postres</option>
+            <option>Snacks</option>
+            <option>Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Precio (S/)</label>
+          <input type="number" id="prod-precio" placeholder="0.00" min="0" step="0.10">
+        </div>
+        <div class="form-group">
+          <label>Stock</label>
+          <input type="number" id="prod-stock" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
+        <button class="btn btn-secondary" onclick="limpiarForm()">Cancelar</button>
+      </div>
+      <p id="form-msg"></p>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Lista de productos</span>
+        <input type="text" id="buscador" placeholder="Buscar..." oninput="filtrar()"
+          style="padding:6px 10px;border:1.5px solid #E8D5C4;border-radius:6px;font-size:12px;width:180px;">
+      </div>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="tabla-productos">
+          <tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+    document.getElementById('nav-usuario').textContent = getUsuario();
+    document.getElementById('nav-rol').textContent     = getRol();
+
+    let todosProductos = [];
+
+    async function cargar() {
+      todosProductos = await Productos.listar();
+      renderTabla(todosProductos);
+    }
+
+    function renderTabla(lista) {
+      const tbody = document.getElementById('tabla-productos');
+      if (!lista.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Sin productos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = lista.map(p => `
+        <tr>
+          <td style="color:#888;">${p.id}</td>
+          <td style="font-weight:500;">${p.nombre}</td>
+          <td>${p.categoria || '—'}</td>
+          <td>S/ ${p.precio?.toFixed(2)}</td>
+          <td><span class="badge ${p.stock < 5 ? 'badge-warn' : 'badge-ok'}">${p.stock}</span></td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-secondary btn-sm" onclick="editar(${p.id})">Editar</button>
+            <button class="btn btn-danger btn-sm"    onclick="eliminar(${p.id})">Eliminar</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filtrar() {
+      const q = document.getElementById('buscador').value.toLowerCase();
+      renderTabla(todosProductos.filter(p =>
+        p.nombre.toLowerCase().includes(q) || (p.categoria||'').toLowerCase().includes(q)
+      ));
+    }
+
+    async function guardarProducto() {
+      const id        = document.getElementById('prod-id').value;
+      const nombre    = document.getElementById('prod-nombre').value.trim();
+      const precio    = parseFloat(document.getElementById('prod-precio').value);
+      const stock     = parseInt(document.getElementById('prod-stock').value);
+      const categoria = document.getElementById('prod-categoria').value;
+      const msg       = document.getElementById('form-msg');
+      if (!nombre || isNaN(precio) || isNaN(stock)) {
+        msg.className = 'msg-err'; msg.textContent = 'Completa todos los campos.'; return;
+      }
+      try {
+        if (id) { await Productos.actualizar(id, { nombre, precio, stock, categoria }); msg.textContent = '✓ Producto actualizado.'; }
+        else    { await Productos.crear({ nombre, precio, stock, categoria }); msg.textContent = '✓ Producto registrado.'; }
+        msg.className = 'msg-ok'; limpiarForm(); cargar();
+      } catch(e) { msg.className = 'msg-err'; msg.textContent = e.message; }
+    }
+
+    function editar(id) {
+      const p = todosProductos.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('prod-id').value        = p.id;
+      document.getElementById('prod-nombre').value    = p.nombre;
+      document.getElementById('prod-precio').value    = p.precio;
+      document.getElementById('prod-stock').value     = p.stock;
+      document.getElementById('prod-categoria').value = p.categoria || '';
+      document.getElementById('form-titulo').textContent = 'Editar producto';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function eliminar(id) {
+      if (!confirm('¿Eliminar este producto?')) return;
+      try { await Productos.eliminar(id); cargar(); }
+      catch(e) { alert(e.message); }
+    }
+
+    function limpiarForm() {
+      ['prod-id','prod-nombre','prod-precio','prod-stock'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('prod-categoria').value = '';
+      document.getElementById('form-titulo').textContent = 'Registrar producto';
+      document.getElementById('form-msg').textContent = '';
+    }
+
+    cargar();
+  </script>
+</body>
+</html>

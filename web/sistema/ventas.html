@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Ventas</title>
+  <link rel="stylesheet" href="css/sistema.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
+    <span class="navbar-spacer"></span>
+    <span class="navbar-user" id="nav-usuario">—</span>
+    <span class="navbar-rol"  id="nav-rol">—</span>
+    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
+  </nav>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">Principal</div>
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
+    <div class="sidebar-section">Operaciones</div>
+    <a href="ventas.html"    class="sidebar-item active"><span class="sidebar-icon">🛒</span> Ventas</a>
+    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
+    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
+    <div class="sidebar-section">Abastecimiento</div>
+    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
+    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
+    <div class="sidebar-section">Finanzas</div>
+    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
+    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
+    <div class="sidebar-section">Administración</div>
+    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-title">Ventas</div>
+    <div class="page-sub">Registrar y consultar ventas del día</div>
+
+    <!-- FORMULARIO NUEVA VENTA -->
+    <div class="form-card">
+      <h3>Registrar nueva venta</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Producto</label>
+          <select id="venta-producto">
+            <option value="">Seleccionar producto...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad</label>
+          <input type="number" id="venta-cantidad" placeholder="1" min="1">
+        </div>
+        <div class="form-group">
+          <label>Método de pago</label>
+          <select id="venta-metodo">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="YAPE">Yape</option>
+            <option value="PLIN">Plin</option>
+            <option value="TARJETA">Tarjeta</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Total estimado</label>
+          <input type="text" id="venta-total" readonly placeholder="S/ 0.00" style="background:#F5F1E9;">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="registrarVenta()">Registrar venta</button>
+        <button class="btn btn-secondary" onclick="limpiarVenta()">Limpiar</button>
+      </div>
+      <p id="venta-msg"></p>
+    </div>
+
+    <!-- TABLA VENTAS -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Ventas del día</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Productos</th><th>Total</th>
+            <th>Método</th><th>Estado</th><th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-ventas">
+          <tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+    document.getElementById('nav-usuario').textContent = getUsuario();
+    document.getElementById('nav-rol').textContent     = getRol();
+
+    let productos = [];
+
+    async function cargarProductos() {
+      productos = await Productos.listar();
+      const sel = document.getElementById('venta-producto');
+      productos.forEach(p => {
+        sel.innerHTML += `<option value="${p.id}" data-precio="${p.precio}">${p.nombre} — S/ ${p.precio}</option>`;
+      });
+    }
+
+    document.getElementById('venta-producto').addEventListener('change', calcularTotal);
+    document.getElementById('venta-cantidad').addEventListener('input', calcularTotal);
+
+    function calcularTotal() {
+      const sel    = document.getElementById('venta-producto');
+      const precio = parseFloat(sel.selectedOptions[0]?.dataset.precio || 0);
+      const cant   = parseInt(document.getElementById('venta-cantidad').value || 0);
+      document.getElementById('venta-total').value = 'S/ ' + (precio * cant).toFixed(2);
+    }
+
+    async function cargarVentas() {
+      const ventas = await Ventas.listar();
+      const tbody  = document.getElementById('tabla-ventas');
+      if (!ventas.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Sin ventas hoy</td></tr>';
+        return;
+      }
+      tbody.innerHTML = ventas.reverse().map(v => `
+        <tr>
+          <td style="color:#888;">#${v.id}</td>
+          <td>${v.detalles?.map(d => d.nombreProducto + ' x' + d.cantidad).join(', ') || '—'}</td>
+          <td style="font-weight:500;">S/ ${v.total?.toFixed(2)}</td>
+          <td>${v.metodoPago || '—'}</td>
+          <td><span class="badge ${v.estado==='ACTIVA'?'badge-ok':'badge-danger'}">${v.estado}</span></td>
+          <td>${v.estado==='ACTIVA' ? `<button class="btn btn-danger btn-sm" onclick="anularVenta(${v.id})">Anular</button>` : '—'}</td>
+        </tr>`).join('');
+    }
+
+    async function registrarVenta() {
+      const productoId = document.getElementById('venta-producto').value;
+      const cantidad   = parseInt(document.getElementById('venta-cantidad').value);
+      const metodoPago = document.getElementById('venta-metodo').value;
+      const msg        = document.getElementById('venta-msg');
+
+      if (!productoId || !cantidad) {
+        msg.className = 'msg-err'; msg.textContent = 'Selecciona un producto y cantidad.'; return;
+      }
+      try {
+        await Ventas.registrar({
+          metodoPago,
+          detalles: [{ productoId: parseInt(productoId), cantidad }]
+        });
+        msg.className = 'msg-ok'; msg.textContent = '✓ Venta registrada correctamente.';
+        limpiarVenta(); cargarVentas();
+      } catch(e) { msg.className = 'msg-err'; msg.textContent = e.message; }
+    }
+
+    async function anularVenta(id) {
+      if (!confirm('¿Anular esta venta?')) return;
+      try { await Ventas.anular(id); cargarVentas(); }
+      catch(e) { alert(e.message); }
+    }
+
+    function limpiarVenta() {
+      document.getElementById('venta-producto').value = '';
+      document.getElementById('venta-cantidad').value = '';
+      document.getElementById('venta-total').value    = '';
+      document.getElementById('venta-msg').textContent = '';
+    }
+
+    cargarProductos();
+    cargarVentas();
+  </script>
+</body>
+</html>

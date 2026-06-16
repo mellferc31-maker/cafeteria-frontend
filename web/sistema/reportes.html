@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Reportes</title>
+  <link rel="stylesheet" href="css/sistema.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
+    <span class="navbar-spacer"></span>
+    <span class="navbar-user" id="nav-usuario">—</span>
+    <span class="navbar-rol"  id="nav-rol">—</span>
+    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
+  </nav>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">Principal</div>
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
+    <div class="sidebar-section">Operaciones</div>
+    <a href="ventas.html"    class="sidebar-item"><span class="sidebar-icon">🛒</span> Ventas</a>
+    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
+    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
+    <div class="sidebar-section">Abastecimiento</div>
+    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
+    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
+    <div class="sidebar-section">Finanzas</div>
+    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
+    <a href="reportes.html" class="sidebar-item active"><span class="sidebar-icon">📊</span> Reportes</a>
+    <div class="sidebar-section">Administración</div>
+    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-title">Reportes</div>
+    <div class="page-sub">Resumen financiero del negocio</div>
+
+    <!-- TARJETAS -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Ventas hoy</div>
+        <div class="value" id="rep-ventas-hoy">—</div>
+        <div class="sub ok" id="rep-cnt-hoy">cargando...</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Ventas esta semana</div>
+        <div class="value" id="rep-ventas-semana">—</div>
+        <div class="sub ok" id="rep-cnt-semana">cargando...</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Total gastos</div>
+        <div class="value" id="rep-gastos">—</div>
+        <div class="sub warn">acumulado</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Gastos fijos</div>
+        <div class="value" id="rep-fijos">—</div>
+        <div class="sub" style="color:#888;">recurrentes</div>
+      </div>
+    </div>
+
+    <!-- VENTAS POR MÉTODO -->
+    <div class="table-card" style="margin-top:20px;">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Ventas de la semana</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Fecha</th><th>Total</th><th>Método</th><th>Estado</th></tr>
+        </thead>
+        <tbody id="tabla-semana">
+          <tr><td colspan="5" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+    document.getElementById('nav-usuario').textContent = getUsuario();
+    document.getElementById('nav-rol').textContent     = getRol();
+
+    async function cargarReportes() {
+      try {
+        const hoy = await Reportes.ventasHoy();
+        const totalHoy = hoy.reduce((s,v) => s + (v.total||0), 0);
+        document.getElementById('rep-ventas-hoy').textContent  = 'S/ ' + totalHoy.toFixed(2);
+        document.getElementById('rep-cnt-hoy').textContent     = hoy.length + ' transacciones';
+      } catch(e) { console.warn(e.message); }
+
+      try {
+        const semana = await Reportes.ventasSemana();
+        const totalSemana = semana.reduce((s,v) => s + (v.total||0), 0);
+        document.getElementById('rep-ventas-semana').textContent = 'S/ ' + totalSemana.toFixed(2);
+        document.getElementById('rep-cnt-semana').textContent    = semana.length + ' transacciones';
+
+        const tbody = document.getElementById('tabla-semana');
+        if (!semana.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:#aaa;">Sin ventas esta semana</td></tr>';
+        } else {
+          tbody.innerHTML = semana.reverse().map(v => `
+            <tr>
+              <td style="color:#888;">#${v.id}</td>
+              <td>${v.fecha || '—'}</td>
+              <td style="font-weight:500;">S/ ${v.total?.toFixed(2)}</td>
+              <td>${v.metodoPago || '—'}</td>
+              <td><span class="badge ${v.estado==='ACTIVA'?'badge-ok':'badge-danger'}">${v.estado}</span></td>
+            </tr>`).join('');
+        }
+      } catch(e) { console.warn(e.message); }
+
+      try {
+        const totalG = await Reportes.totalGastos();
+        document.getElementById('rep-gastos').textContent = 'S/ ' + (totalG||0).toFixed(2);
+      } catch(e) { console.warn(e.message); }
+
+      try {
+        const totalF = await Reportes.totalFijos();
+        document.getElementById('rep-fijos').textContent = 'S/ ' + (totalF||0).toFixed(2);
+      } catch(e) { console.warn(e.message); }
+    }
+
+    cargarReportes();
+  </script>
+</body>
+</html>

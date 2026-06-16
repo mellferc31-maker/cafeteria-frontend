@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Proveedores</title>
+  <link rel="stylesheet" href="css/sistema.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
+    <span class="navbar-spacer"></span>
+    <span class="navbar-user" id="nav-usuario">—</span>
+    <span class="navbar-rol"  id="nav-rol">—</span>
+    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
+  </nav>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">Principal</div>
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
+    <div class="sidebar-section">Operaciones</div>
+    <a href="ventas.html"    class="sidebar-item"><span class="sidebar-icon">🛒</span> Ventas</a>
+    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
+    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
+    <div class="sidebar-section">Abastecimiento</div>
+    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
+    <a href="proveedores.html" class="sidebar-item active"><span class="sidebar-icon">🏭</span> Proveedores</a>
+    <div class="sidebar-section">Finanzas</div>
+    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
+    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
+    <div class="sidebar-section">Administración</div>
+    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-title">Proveedores</div>
+    <div class="page-sub">Gestión de proveedores</div>
+
+    <div class="form-card">
+      <h3 id="prov-titulo">Registrar proveedor</h3>
+      <input type="hidden" id="prov-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="prov-nombre" placeholder="Ej: Distribuidora Central">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="prov-telefono" placeholder="Ej: 987654321">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="guardarProveedor()">Guardar</button>
+        <button class="btn btn-secondary" onclick="limpiarProv()">Cancelar</button>
+      </div>
+      <p id="prov-msg"></p>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Lista de proveedores</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="tabla-proveedores">
+          <tr><td colspan="4" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+    document.getElementById('nav-usuario').textContent = getUsuario();
+    document.getElementById('nav-rol').textContent     = getRol();
+
+    let lista = [];
+
+    async function cargar() {
+      lista = await Proveedores.listar();
+      const tbody = document.getElementById('tabla-proveedores');
+      if (!lista.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:#aaa;">Sin proveedores</td></tr>';
+        return;
+      }
+      tbody.innerHTML = lista.map(p => `
+        <tr>
+          <td style="color:#888;">${p.id}</td>
+          <td style="font-weight:500;">${p.nombre}</td>
+          <td>${p.telefono || '—'}</td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-secondary btn-sm" onclick="editar(${p.id})">Editar</button>
+            <button class="btn btn-danger btn-sm"    onclick="eliminar(${p.id})">Eliminar</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    async function guardarProveedor() {
+      const id       = document.getElementById('prov-id').value;
+      const nombre   = document.getElementById('prov-nombre').value.trim();
+      const telefono = document.getElementById('prov-telefono').value.trim();
+      const msg      = document.getElementById('prov-msg');
+      if (!nombre) { msg.className = 'msg-err'; msg.textContent = 'El nombre es obligatorio.'; return; }
+      try {
+        if (id) { await Proveedores.actualizar(id, { nombre, telefono }); msg.textContent = '✓ Proveedor actualizado.'; }
+        else    { await Proveedores.crear({ nombre, telefono }); msg.textContent = '✓ Proveedor registrado.'; }
+        msg.className = 'msg-ok'; limpiarProv(); cargar();
+      } catch(e) { msg.className = 'msg-err'; msg.textContent = e.message; }
+    }
+
+    function editar(id) {
+      const p = lista.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('prov-id').value       = p.id;
+      document.getElementById('prov-nombre').value   = p.nombre;
+      document.getElementById('prov-telefono').value = p.telefono || '';
+      document.getElementById('prov-titulo').textContent = 'Editar proveedor';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function eliminar(id) {
+      if (!confirm('¿Eliminar este proveedor?')) return;
+      try { await Proveedores.eliminar(id); cargar(); }
+      catch(e) { alert(e.message); }
+    }
+
+    function limpiarProv() {
+      ['prov-id','prov-nombre','prov-telefono'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('prov-titulo').textContent = 'Registrar proveedor';
+      document.getElementById('prov-msg').textContent = '';
+    }
+
+    cargar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruma Café — Gastos</title>
+  <link rel="stylesheet" href="css/sistema.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
+    <span class="navbar-spacer"></span>
+    <span class="navbar-user" id="nav-usuario">—</span>
+    <span class="navbar-rol"  id="nav-rol">—</span>
+    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
+  </nav>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">Principal</div>
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
+    <div class="sidebar-section">Operaciones</div>
+    <a href="ventas.html"    class="sidebar-item"><span class="sidebar-icon">🛒</span> Ventas</a>
+    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
+    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
+    <div class="sidebar-section">Abastecimiento</div>
+    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
+    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
+    <div class="sidebar-section">Finanzas</div>
+    <a href="gastos.html"   class="sidebar-item active"><span class="sidebar-icon">💸</span> Gastos</a>
+    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
+    <div class="sidebar-section">Administración</div>
+    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-title">Gastos</div>
+    <div class="page-sub">Registro y control de gastos</div>
+
+    <div class="form-card">
+      <h3>Registrar gasto</h3>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Descripción</label>
+          <input type="text" id="gasto-desc" placeholder="Ej: Compra de servilletas">
+        </div>
+        <div class="form-group">
+          <label>Monto (S/)</label>
+          <input type="number" id="gasto-monto" placeholder="0.00" min="0" step="0.10">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="gasto-tipo">
+            <option value="VARIABLE">Variable</option>
+            <option value="FIJO">Fijo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Método de pago</label>
+          <select id="gasto-metodo">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="YAPE">Yape</option>
+            <option value="TRANSFERENCIA">Transferencia</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="registrarGasto()">Registrar</button>
+        <button class="btn btn-secondary" onclick="limpiarGasto()">Limpiar</button>
+      </div>
+      <p id="gasto-msg"></p>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Lista de gastos</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Descripción</th><th>Monto</th><th>Tipo</th><th>Método</th><th>Estado</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="tabla-gastos">
+          <tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+    document.getElementById('nav-usuario').textContent = getUsuario();
+    document.getElementById('nav-rol').textContent     = getRol();
+
+    async function cargar() {
+      const gastos = await Gastos.listar();
+      const tbody  = document.getElementById('tabla-gastos');
+      if (!gastos.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;">Sin gastos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = gastos.reverse().map(g => `
+        <tr>
+          <td style="color:#888;">${g.id}</td>
+          <td>${g.descripcion}</td>
+          <td style="font-weight:500;">S/ ${g.monto?.toFixed(2)}</td>
+          <td><span class="badge ${g.tipo==='FIJO'?'badge-info':'badge-gray'}">${g.tipo}</span></td>
+          <td>${g.metodoPago || '—'}</td>
+          <td><span class="badge ${g.activo?'badge-ok':'badge-danger'}">${g.activo?'ACTIVO':'ANULADO'}</span></td>
+          <td>${g.activo ? `<button class="btn btn-danger btn-sm" onclick="anular(${g.id})">Anular</button>` : '—'}</td>
+        </tr>`).join('');
+    }
+
+    async function registrarGasto() {
+      const descripcion = document.getElementById('gasto-desc').value.trim();
+      const monto       = parseFloat(document.getElementById('gasto-monto').value);
+      const tipo        = document.getElementById('gasto-tipo').value;
+      const metodoPago  = document.getElementById('gasto-metodo').value;
+      const msg         = document.getElementById('gasto-msg');
+      if (!descripcion || !monto) { msg.className = 'msg-err'; msg.textContent = 'Completa todos los campos.'; return; }
+      try {
+        await Gastos.crear({ descripcion, monto, tipo, metodoPago, activo: true });
+        msg.className = 'msg-ok'; msg.textContent = '✓ Gasto registrado.';
+        limpiarGasto(); cargar();
+      } catch(e) { msg.className = 'msg-err'; msg.textContent = e.message; }
+    }
+
+    async function anular(id) {
+      if (!confirm('¿Anular este gasto?')) return;
+      try { await Gastos.anular(id); cargar(); }
+      catch(e) { alert(e.message); }
+    }
+
+    function limpiarGasto() {
+      ['gasto-desc','gasto-monto'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('gasto-msg').textContent = '';
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
