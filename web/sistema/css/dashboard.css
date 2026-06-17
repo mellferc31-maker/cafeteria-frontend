@@ -1,0 +1,100 @@
+/* ── DASHBOARD ── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.chart-card {
+  background: #ffffff;
+  border: 0.5px solid #E8E2DA;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.chart-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2920;
+  margin-bottom: 14px;
+}
+
+/* Barras */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.bar-lbl {
+  font-size: 10px;
+  color: #888;
+  width: 26px;
+}
+
+.bar-track {
+  flex: 1;
+  height: 6px;
+  background: #F0ECE8;
+  border-radius: 3px;
+}
+
+.bar-fill {
+  height: 6px;
+  border-radius: 3px;
+  background: #26382E;
+  transition: width .3s ease;
+}
+
+.bar-val {
+  font-size: 10px;
+  color: #555;
+  width: 38px;
+  text-align: right;
+}
+
+/* Dona */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.donut-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #555;
+}
+
+.donut-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Bienvenida */
+.welcome-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.welcome-row .date {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

@@ -1,0 +1,35 @@
+/* ── USUARIOS ── */
+.rol-badge-ADMIN   { background: #FCEBEB; color: #A32D2D; }
+.rol-badge-CAJERO  { background: #FAEEDA; color: #854F0B; }
+.rol-badge-MESERO  { background: #EAF3DE; color: #3B6D11; }
+.rol-badge-GERENTE { background: #E6F1FB; color: #185FA5; }
+
+.usuario-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #E1F5EE;
+  color: #0F6E56;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.usuario-nombre-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.usuario-nombre {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.usuario-sub {
+  font-size: 11px;
+  color: #888;
+}
