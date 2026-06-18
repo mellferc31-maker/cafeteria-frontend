@@ -3,7 +3,7 @@
    js/api.js — COMPARTIDO
    ================================================ */
 
-const BASE = 'http://localhost:8080';
+const BASE = 'http://localhost:8081';
 
 /* ── Sesión ── */
 function getToken()    { return sessionStorage.getItem('token'); }
