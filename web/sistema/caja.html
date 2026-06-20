@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bruma Café — Caja</title>
   <link rel="stylesheet" href="css/sistema.css">
+  <link rel="stylesheet" href="css/caja.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
 </head>
 <body>
 
@@ -38,39 +40,53 @@
     <div class="page-sub">Control del turno de caja</div>
 
     <!-- ESTADO CAJA -->
-    <div class="summary-grid" style="margin-bottom:20px;">
-      <div class="summary-card">
+    <div class="caja-summary">
+      <div class="caja-summary-card" id="card-estado">
         <div class="label">Estado</div>
-        <div class="value" id="caja-estado">—</div>
+        <div class="value" id="caja-estado"><span class="estado-dot"></span>—</div>
         <div class="sub" id="caja-sub">cargando...</div>
       </div>
-      <div class="summary-card">
+      <div class="caja-summary-card">
         <div class="label">Monto inicial</div>
         <div class="value" id="caja-inicial">—</div>
       </div>
-      <div class="summary-card">
+      <div class="caja-summary-card">
         <div class="label">Total ingresos</div>
         <div class="value" id="caja-ingresos">—</div>
       </div>
     </div>
 
-    <!-- ACCIONES CAJA -->
-    <div class="form-card" style="max-width:400px;">
-      <h3 id="caja-form-titulo">Abrir caja</h3>
-      <div class="form-group" id="grupo-monto">
-        <label>Monto inicial (S/)</label>
-        <input type="number" id="caja-monto" placeholder="200.00" min="0" step="0.50">
+    <!-- GRID: ACCIONES + RESUMEN VISUAL -->
+    <div class="caja-grid">
+
+      <!-- ACCIONES CAJA -->
+      <div class="form-card">
+        <h3><span class="form-card-icon" id="form-icon"><i class="ti ti-lock"></i></span> <span id="caja-form-titulo">Abrir caja</span></h3>
+        <div class="form-group" id="grupo-monto">
+          <label>Monto inicial (S/)</label>
+          <input type="number" id="caja-monto" placeholder="200.00" min="0" step="0.50">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" id="btn-caja" onclick="accionCaja()"><i class="ti ti-lock-open"></i> Abrir caja</button>
+        </div>
+        <p id="caja-msg"></p>
       </div>
-      <div class="form-actions">
-        <button class="btn btn-primary" id="btn-caja" onclick="accionCaja()">Abrir caja</button>
+
+      <!-- TARJETA INFORMATIVA -->
+      <div class="caja-info-card" id="info-card">
+        <i class="ti ti-info-circle" id="info-icon"></i>
+        <div class="info-titulo" id="info-titulo">Sin turno activo</div>
+        <p id="info-texto">Abre la caja con un monto inicial para empezar a registrar ventas e ingresos del día.</p>
       </div>
-      <p id="caja-msg"></p>
+
     </div>
 
     <!-- MOVIMIENTOS -->
     <div class="table-card">
       <div class="table-toolbar">
+        <span class="table-toolbar-dot"></span>
         <span class="table-toolbar-title">Movimientos del turno</span>
+        <span class="table-toolbar-count" id="contador-movs">0 registros</span>
       </div>
       <table>
         <thead>
@@ -95,16 +111,41 @@
       try {
         const data = await Caja.estado();
         cajaAbierta = data.abierta;
-        document.getElementById('caja-estado').textContent   = cajaAbierta ? 'ABIERTA' : 'CERRADA';
+
+        const estadoDiv = document.getElementById('caja-estado');
+        estadoDiv.innerHTML = `<span class="estado-dot ${cajaAbierta ? 'on' : 'off'}"></span>${cajaAbierta ? 'ABIERTA' : 'CERRADA'}`;
+
         document.getElementById('caja-inicial').textContent  = cajaAbierta ? 'S/ ' + (data.caja?.montoInicial || 0) : '—';
         document.getElementById('caja-ingresos').textContent = cajaAbierta ? 'S/ ' + (data.caja?.totalIngresos || 0) : '—';
+
         const sub = document.getElementById('caja-sub');
         sub.textContent = cajaAbierta ? 'Turno activo' : 'Sin turno activo';
         sub.className   = 'sub ' + (cajaAbierta ? 'ok' : 'warn');
+
+        document.getElementById('card-estado').className = 'caja-summary-card ' + (cajaAbierta ? 'borde-ok' : 'borde-warn');
+
         document.getElementById('caja-form-titulo').textContent = cajaAbierta ? 'Cerrar caja' : 'Abrir caja';
-        document.getElementById('btn-caja').textContent         = cajaAbierta ? 'Cerrar caja' : 'Abrir caja';
-        document.getElementById('btn-caja').className           = cajaAbierta ? 'btn btn-danger' : 'btn btn-primary';
-        document.getElementById('grupo-monto').style.display    = cajaAbierta ? 'none' : 'flex';
+        document.getElementById('btn-caja').innerHTML            = cajaAbierta ? '<i class="ti ti-lock"></i> Cerrar caja' : '<i class="ti ti-lock-open"></i> Abrir caja';
+        document.getElementById('btn-caja').className            = cajaAbierta ? 'btn btn-danger' : 'btn btn-primary';
+        document.getElementById('grupo-monto').style.display     = cajaAbierta ? 'none' : 'flex';
+        document.getElementById('form-icon').innerHTML            = cajaAbierta ? '<i class="ti ti-lock-open"></i>' : '<i class="ti ti-lock"></i>';
+
+        const infoCard   = document.getElementById('info-card');
+        const infoIcon   = document.getElementById('info-icon');
+        const infoTitulo = document.getElementById('info-titulo');
+        const infoTexto  = document.getElementById('info-texto');
+
+        if (cajaAbierta) {
+          infoCard.className = 'caja-info-card activa';
+          infoIcon.className = 'ti ti-circle-check';
+          infoTitulo.textContent = 'Turno en curso';
+          infoTexto.textContent  = 'La caja está abierta. Todas las ventas registradas se suman al total de ingresos de este turno.';
+        } else {
+          infoCard.className = 'caja-info-card';
+          infoIcon.className = 'ti ti-info-circle';
+          infoTitulo.textContent = 'Sin turno activo';
+          infoTexto.textContent  = 'Abre la caja con un monto inicial para empezar a registrar ventas e ingresos del día.';
+        }
       } catch(e) { console.warn(e.message); }
     }
 
@@ -112,15 +153,16 @@
       try {
         const movs  = await Caja.movimientos();
         const tbody = document.getElementById('tabla-movimientos');
+        document.getElementById('contador-movs').textContent = movs.length + ' registros';
         if (!movs.length) {
           tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:24px;color:#aaa;">Sin movimientos</td></tr>';
           return;
         }
         tbody.innerHTML = movs.map(m => `
           <tr>
-            <td><span class="badge ${m.tipo==='INGRESO'?'badge-ok':'badge-danger'}">${m.tipo}</span></td>
+            <td><span class="badge ${m.tipo==='INGRESO'?'badge-ok':'badge-danger'}"><i class="ti ${m.tipo==='INGRESO'?'ti-arrow-down':'ti-arrow-up'}"></i> ${m.tipo}</span></td>
             <td>${m.descripcion || '—'}</td>
-            <td style="font-weight:500;">S/ ${m.monto?.toFixed(2)}</td>
+            <td style="font-weight:600;">S/ ${m.monto?.toFixed(2)}</td>
           </tr>`).join('');
       } catch(e) { console.warn(e.message); }
     }
