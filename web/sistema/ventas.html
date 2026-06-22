@@ -4,42 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bruma Café — Ventas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/sistema.css">
   <link rel="stylesheet" href="css/ventas.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
 </head>
 <body>
 
-  <nav class="navbar">
-    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
-    <span class="navbar-spacer"></span>
-    <span class="navbar-user" id="nav-usuario">—</span>
-    <span class="navbar-rol"  id="nav-rol">—</span>
-    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
-  </nav>
+<nav class="navbar">
+  <div class="navbar-logo"><img src="../Imagenes/LOGO2.png" alt="Logo"></div>
+  <span class="navbar-brand">Bruma <span>Café</span></span>
+  <span class="navbar-spacer"></span>
+  <span class="navbar-user" id="nav-usuario">—</span>
+  <span class="navbar-divider"></span>
+  <span class="navbar-rol" id="nav-rol"><i class="ti ti-circle-filled dot"></i>—</span>
+  <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión <i class="ti ti-logout"></i></span>
+</nav>
 
-  <aside class="sidebar">
-    <div class="sidebar-section">Principal</div>
-    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
-    <div class="sidebar-section">Operaciones</div>
-    <a href="ventas.html"    class="sidebar-item active"><span class="sidebar-icon">🛒</span> Ventas</a>
-    <a href="caja.html"      class="sidebar-item"><span class="sidebar-icon">💰</span> Caja</a>
-    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
-    <div class="sidebar-section">Abastecimiento</div>
-    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
-    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
-    <div class="sidebar-section">Finanzas</div>
-    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
-    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
-    <div class="sidebar-section">Administración</div>
-    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
-  </aside>
+<aside class="sidebar">
+  <div class="sidebar-section">Principal</div>
+  <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-layout-dashboard"></i></span> Dashboard</a>
+
+  <div class="sidebar-section">Operaciones</div>
+  <a href="ventas.html" class="sidebar-item active"><span class="sidebar-icon"><i class="ti ti-shopping-cart"></i></span> Ventas</a>
+  <a href="caja.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-calculator"></i></span> Caja</a>
+  <a href="productos.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-box"></i></span> Productos</a>
+
+  <div class="sidebar-section">Abastecimiento</div>
+  <a href="compras.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-truck"></i></span> Compras</a>
+  <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-building-factory-2"></i></span> Proveedores</a>
+
+  <div class="sidebar-section">Finanzas</div>
+  <a href="gastos.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-receipt-2"></i></span> Gastos</a>
+  <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-chart-bar"></i></span> Reportes</a>
+
+  <div class="sidebar-section">Administración</div>
+  <a href="usuarios.html" class="sidebar-item" id="link-usuarios"><span class="sidebar-icon"><i class="ti ti-users"></i></span> Usuarios</a>
+</aside>
 
   <main class="main">
     <div class="page-title">Ventas</div>
     <div class="page-sub">Registrar y consultar ventas del día</div>
 
-    <!-- TARJETAS RESUMEN -->
     <div class="ventas-summary">
       <div class="ventas-summary-card destacada">
         <div class="label">Total vendido hoy</div>
@@ -58,10 +64,8 @@
       </div>
     </div>
 
-    <!-- GRID: FORMULARIO + VISTA PREVIA -->
     <div class="venta-grid">
 
-      <!-- FORMULARIO NUEVA VENTA -->
       <div class="form-card">
         <h3><span class="form-card-icon"><i class="ti ti-shopping-cart-plus"></i></span> Nueva venta</h3>
 
@@ -110,7 +114,6 @@
         <p id="venta-msg"></p>
       </div>
 
-      <!-- VISTA PREVIA TIPO RECIBO -->
       <div class="recibo-card">
         <div class="recibo-header">
           <i class="ti ti-receipt"></i>
@@ -127,7 +130,6 @@
 
     </div>
 
-    <!-- TABLA VENTAS -->
     <div class="table-card">
       <div class="table-toolbar">
         <span class="table-toolbar-dot"></span>
@@ -149,10 +151,12 @@
   </main>
 
   <script src="js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     if (!getToken()) window.location.href = 'login.html';
     document.getElementById('nav-usuario').textContent = getUsuario();
-    document.getElementById('nav-rol').textContent     = getRol();
+    document.getElementById('nav-rol').innerHTML = '<i class="ti ti-circle-filled dot"></i>' + getRol();
+    if (getRol() !== 'ADMIN') document.getElementById('link-usuarios').style.display = 'none';
 
     let productos = [];
     let metodoSeleccionado = 'EFECTIVO';

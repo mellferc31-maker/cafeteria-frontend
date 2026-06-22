@@ -1,0 +1,129 @@
+/* ── COMPRAS ── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.header-section { margin-bottom: 30px; }
+.header-section h1 { color: #26382E; font-size: 28px; margin: 0; }
+.header-section p { color: #8C847A; font-size: 13.5px; margin-top: 6px; }
+
+.admin-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+.card-header {
+  font-weight: 700;
+  color: #26382E;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  background-color: #BFD9C3;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.input-group label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 5px;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #E6E0D4;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13.5px;
+  transition: border-color .15s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #26382E;
+}
+
+.btn-primary {
+  background: #26382E;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-primary:hover { opacity: .9; }
+
+.btn-cancel {
+  background: #E6E0D4;
+  color: #26382E;
+  padding: 12px 25px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background .15s;
+}
+.btn-cancel:hover { background: #DCD4C6; }
+
+#compra-msg {
+  font-size: 13px;
+  margin-top: 14px;
+  font-weight: 600;
+}
+.msg-ok  { color: #2D6A4F; }
+.msg-err { color: #C0392B; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 15px;
+  font-size: 11px;
+  color: #8C847A;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-bottom: 1px solid #E6E0D4;
+}
+
+.admin-table td {
+  padding: 15px;
+  border-bottom: 1px solid #E6E0D4;
+  font-size: 13.5px;
+  color: #2C1B0E;
+}
+
+.admin-table tr:hover td { background: #FAFAF8; }
+
+@media (max-width: 768px) {
+  .input-grid { grid-template-columns: 1fr; }
+}

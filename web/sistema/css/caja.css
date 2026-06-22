@@ -1,173 +1,318 @@
-/* ── CAJA ── */
+/* ── CAJA PROFESIONAL Y ELEGANTE (BRUMA CAFÉ) ── */
+
+main.main {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 32px;
+  background-color: #F8F6F4;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1A2820;
+  letter-spacing: -0.02em;
+}
+
+.page-sub {
+  font-size: 13.5px;
+  color: #8C827A;
+  margin-top: 4px;
+  margin-bottom: 32px;
+}
 
 .caja-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 20px;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .caja-summary-card {
-  background: #fff;
-  border: 1px solid #E8D5C4;
-  border-left: 3px solid #ccc;
-  border-radius: 10px;
-  padding: 18px 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
-  transition: border-color .2s;
+  background: #ffffff;
+  border: 1px solid #EFECE9;
+  border-left: 4px solid #E1DCD6;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 18px rgba(38, 56, 46, 0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.caja-summary-card.borde-ok   { border-left-color: #2D6A4F; }
-.caja-summary-card.borde-warn { border-left-color: #C0392B; }
+.caja-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(38, 56, 46, 0.05);
+}
+
+.caja-summary-card.borde-ok   { border-left-color: #2D6A4F; background: linear-gradient(to right, #F4FAF7, #ffffff 15%); }
+.caja-summary-card.borde-warn { border-left-color: #C0392B; background: linear-gradient(to right, #FDF4F4, #ffffff 15%); }
 
 .caja-summary-card .label {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: #888;
-  margin-bottom: 8px;
+  color: #A39890;
+  margin-bottom: 12px;
 }
 
 .caja-summary-card .value {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
-  color: #2C1B0E;
+  color: #26382E;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .caja-summary-card .sub {
-  font-size: 11px;
-  margin-top: 6px;
+  font-size: 12.5px;
+  margin-top: 8px;
+  color: #8C827A;
 }
 
-.sub.ok   { color: #2D6A4F; }
-.sub.warn { color: #B45309; }
+.sub.ok   { color: #2D6A4F; font-weight: 600; }
+.sub.warn { color: #B45309; font-weight: 600; }
 
 .estado-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: #ccc;
-  flex-shrink: 0;
+  background: #A39890;
+  position: relative;
 }
-
-.estado-dot.on  { background: #2D6A4F; }
-.estado-dot.off { background: #C0392B; }
+.estado-dot.on  { background: #2D6A4F; box-shadow: 0 0 8px #2D6A4F; }
+.estado-dot.off { background: #C0392B; box-shadow: 0 0 8px #C0392B; }
 
 .caja-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
   align-items: start;
 }
 
 .form-card {
-  border-left: 3px solid #26382E;
-  max-width: none;
+  background: #ffffff;
+  border: 1px solid #EFECE9;
+  border-left: 5px solid #26382E;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
 }
 
 .form-card h3 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
+  margin-top: 0;
+  margin-bottom: 28px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A2820;
 }
 
 .form-card-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: #FFF9E6;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #F5F1E9;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  color: #7D5A00;
+  font-size: 18px;
+  color: #26382E;
 }
 
-.btn-primary,
-.btn-danger {
+.form-group { margin-bottom: 24px; }
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4A3E3D;
+  margin-bottom: 10px;
+}
+
+.form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: 1px solid #E1DCD6;
+  border-radius: 10px;
+  background: #FAFAFA;
+  font-family: inherit;
+  font-size: 14px;
+  color: #2C1B0E;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #26382E;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(38, 56, 46, 0.06);
+}
+
+.form-actions { margin-top: 28px; }
+
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
 }
 
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+  background: #26382E;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(38, 56, 46, 0.15);
+}
+
+.btn-danger {
+  background: #C0392B;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(192, 57, 43, 0.15);
+}
+
+.btn:hover { opacity: 0.92; }
+
+#caja-msg {
+  font-size: 13px;
+  margin-top: 16px;
+  font-weight: 500;
+}
+.msg-ok { color: #2D6A4F; }
+.msg-err { color: #C0392B; }
+
 .caja-info-card {
-  background: #FFF9E6;
-  border: 1px solid #F5E5B8;
-  border-radius: 10px;
-  padding: 24px;
+  background: #FFFDF6;
+  border: 1px solid #F3E5BF;
+  border-radius: 20px;
+  padding: 42px 28px;
   text-align: center;
+  box-shadow: 0 4px 15px rgba(212, 163, 89, 0.02);
+  transition: all 0.3s ease;
 }
 
 .caja-info-card.activa {
-  background: #E1F5EE;
-  border-color: #9FE1CB;
+  background: #F4FAF7;
+  border-color: #A3E1C9;
+  box-shadow: 0 4px 15px rgba(45, 106, 79, 0.02);
 }
 
 .caja-info-card i {
-  font-size: 32px;
-  color: #B45309;
-  margin-bottom: 10px;
+  font-size: 42px;
+  color: #D4A373;
+  margin-bottom: 18px;
   display: inline-block;
 }
 
-.caja-info-card.activa i {
-  color: #04342C;
-}
+.caja-info-card.activa i { color: #2D6A4F; }
 
 .info-titulo {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
-  color: #2C1B0E;
-  margin-bottom: 8px;
+  color: #1A2820;
+  margin-bottom: 12px;
 }
 
 .caja-info-card p {
-  font-size: 12px;
-  color: #4E342E;
-  opacity: .8;
+  font-size: 13.5px;
+  color: #61554E;
   line-height: 1.6;
-  max-width: 280px;
+  max-width: 300px;
   margin: 0 auto;
+}
+
+.table-card {
+  background: #ffffff;
+  border: 1px solid #EFECE9;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #F5F3F1;
+  padding-bottom: 16px;
 }
 
 .table-toolbar-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #7EC8A0;
-  flex-shrink: 0;
+  background: #4CAF50;
+  box-shadow: 0 0 8px #4CAF50;
+}
+
+.table-toolbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A2820;
 }
 
 .table-toolbar-count {
-  font-size: 11px;
-  color: #999;
+  font-size: 13px;
+  color: #9C928A;
+  margin-left: auto;
+  font-weight: 500;
 }
 
-#tabla-movimientos tr:nth-child(even) { background: #FAFAF3; }
-#tabla-movimientos tr:hover { background: #F0ECE3; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+table th {
+  text-align: left;
+  padding: 14px 18px;
+  background: #FAFAFA;
+  color: #5C524A;
+  font-weight: 600;
+  border-bottom: 1px solid #ECEAE7;
+}
+
+table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #F5F3F1;
+  color: #2C1B0E;
+}
+
+#tabla-movimientos tr:nth-child(even) { background: #FCFCFC; }
+#tabla-movimientos tr:hover td { background: #FAF9F8; }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.badge-ok     { background: #E1F5EE; color: #04342C; }
-.badge-danger { background: #FCEBEB; color: #501313; }
+.badge-ok     { background: #E8F5E9; color: #1B5E20; }
+.badge-danger { background: #FFEBEE; color: #C62828; }
 
 @media (max-width: 900px) {
-  .caja-grid {
-    grid-template-columns: 1fr;
-  }
+  .caja-grid { grid-template-columns: 1fr; gap: 24px; }
 }
 
 @media (max-width: 768px) {
-  .caja-summary {
-    grid-template-columns: 1fr;
-  }
+  .caja-summary { grid-template-columns: 1fr; gap: 16px; }
 }

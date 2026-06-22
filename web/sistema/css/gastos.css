@@ -1,0 +1,46 @@
+* ── ESTILO PROFESIONAL UNIFICADO: BRUMA CAFÉ ── */
+main.main {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 32px;
+  background-color: #F8F6F4;
+  min-height: 100vh;
+  box-sizing: border-box;
+  margin-left: 240px; /* Ajuste para el sidebar */
+}
+ 
+.page-title { font-size: 26px; font-weight: 700; color: #1A2820; letter-spacing: -0.02em; }
+.page-sub { font-size: 13.5px; color: #8C827A; margin-top: 4px; margin-bottom: 32px; }
+ 
+/* Tarjetas de Contenido */
+.form-card, .table-card {
+  background: #ffffff;
+  border: 1px solid #EFECE9;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+  margin-bottom: 32px;
+}
+ 
+/* Grillas de Formulario */
+.form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: end; }
+.form-group { margin-bottom: 24px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: #4A3E3D; margin-bottom: 10px; }
+.form-group input, .form-group select {
+  width: 100%; padding: 14px 16px; border: 1px solid #E1DCD6; border-radius: 10px;
+  background: #FAFAFA; font-size: 14px; transition: all 0.2s;
+}
+ 
+/* Botones */
+.btn { padding: 14px 28px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
+.btn-primary { background: #26382E; color: #ffffff; }
+.btn-secondary { background: #E6E0D4; color: #26382E; margin-left: 10px; }
+ 
+/* Tabla Estilizada */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+table th { text-align: left; padding: 16px; background: #FAFAFA; color: #5C524A; border-bottom: 1px solid #ECEAE7; }
+table td { padding: 16px; border-bottom: 1px solid #F5F3F1; }
+ 
+/* Badges */
+.badge { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.badge-ok { background: #E8F5E9; color: #1B5E20; }
+.badge-danger { background: #FFEBEE; color: #C62828; }

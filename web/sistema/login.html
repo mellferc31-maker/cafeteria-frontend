@@ -3,39 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bruma Café — Ingresar</title>
+  <title>Bruma Café — Sistema Interno</title>
   <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <div class="bg-steam">
+    <div class="steam s1"></div>
+    <div class="steam s2"></div>
+    <div class="steam s3"></div>
+  </div>
 
   <div class="login-wrap">
 
     <div class="login-left">
-        <img src="../Imagenes/LOGO2.png" alt="Logo Bruma Café" class="login-logo-img">
-      <h1>Bruma <span>Café</span></h1>
-      <div class="login-divider"></div>
-      <p>Panel de administración del personal. Ingresa con tu usuario y contraseña para continuar.</p>
+      <div class="particula p1"></div>
+      <div class="particula p2"></div>
+      <div class="particula p3"></div>
+      <div class="particula p4"></div>
+      <div class="circulo-decor c1"></div>
+      <div class="circulo-decor c2"></div>
+
+      <div class="left-content">
+        <div class="login-logo-ring">
+          <div class="login-logo-circle">
+            <img src="../Imagenes/LOGO2.png" alt="Logo Bruma Café" class="login-logo-img">
+          </div>
+        </div>
+
+        <div class="brand-text">
+          <h1>Bruma<br><span>Café</span></h1>
+          <div class="brand-divider"></div>
+          <p>Despierta tus sentidos,<br>gestiona tu café.</p>
+        </div>
+      </div>
     </div>
 
     <div class="login-right">
-      <h2>Ingresa tu cuenta</h2>
-      <p>Bienvenido de nuevo.</p>
+      <div class="right-body">
+        <h2>Bienvenido de nuevo</h2>
+        <p class="subtitle">Ingresa tus credenciales autorizadas para acceder al sistema de gestión.</p>
 
-      <div class="login-error" id="error-msg">Usuario o contraseña incorrectos.</div>
+        <div class="login-error" id="error-msg">
+          <i class="ti ti-alert-circle"></i>
+          <span id="error-text">Usuario o contraseña incorrectos.</span>
+        </div>
 
-      <div class="login-field">
-        <label for="username">Usuario</label>
-        <input type="text" id="username" placeholder="Tu nombre de usuario">
-      </div>
-      <div class="login-field">
-        <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="••••••••">
-      </div>
+        <div class="login-field">
+          <label for="username"><i class="ti ti-user"></i> Usuario</label>
+          <div class="input-wrap">
+            <input type="text" id="username" placeholder="Tu nombre de usuario" autocomplete="username">
+            <span class="input-focus-line"></span>
+          </div>
+        </div>
 
-      <button class="login-btn" onclick="ingresar()">Ingresar al sistema</button>
+        <div class="login-field">
+          <label for="password"><i class="ti ti-lock"></i> Contraseña</label>
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+            <button class="toggle-pass" type="button" onclick="togglePassword()" aria-label="Mostrar contraseña">
+              <i class="ti ti-eye" id="eye-icon"></i>
+            </button>
+            <span class="input-focus-line"></span>
+          </div>
+        </div>
 
-      <div class="login-back">
-        <a href="../index.html">← Volver al sitio público</a>
+        <div class="login-options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember">
+            <span class="checkmark"></span>
+            Recordarme
+          </label>
+          <a href="#" class="inline-link">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <div class="action-group">
+          <button class="login-btn" id="login-btn" onclick="ingresar()">
+            <span class="btn-text">Ingresar al sistema</span>
+            <span class="btn-icon"><i class="ti ti-arrow-right"></i></span>
+            <span class="btn-loader" style="display:none;"><i class="ti ti-loader-2"></i></span>
+          </button>
+          
+          <a href="../index.html" class="back-public-link">
+            <i class="ti ti-arrow-left"></i> Volver al sitio público
+          </a>
+        </div>
       </div>
     </div>
 
@@ -43,17 +97,39 @@
 
   <script src="js/api.js"></script>
   <script>
-    if (getToken()) window.location.href = 'dashboard.html';
+    if (typeof getToken === 'function' && getToken()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon  = document.getElementById('eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'ti ti-eye-off';
+      } else {
+        input.type = 'password';
+        icon.className = 'ti ti-eye';
+      }
+    }
+
     async function ingresar() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const errorDiv = document.getElementById('error-msg');
-      errorDiv.style.display = 'none';
+      const username  = document.getElementById('username').value.trim();
+      const password  = document.getElementById('password').value;
+      const errorDiv  = document.getElementById('error-msg');
+      const errorText = document.getElementById('error-text');
+      const btn       = document.getElementById('login-btn');
+
+      errorDiv.classList.remove('show');
+
       if (!username || !password) {
-        errorDiv.textContent = 'Completa todos los campos.';
-        errorDiv.style.display = 'block';
+        errorText.textContent = 'Completa todos los campos.';
+        errorDiv.classList.add('show');
         return;
       }
+
+      btn.classList.add('loading');
+
       try {
         const data = await login(username, password);
         setToken(data.token);
@@ -62,11 +138,23 @@
         setUsuario(payload.sub || username);
         window.location.href = 'dashboard.html';
       } catch(e) {
-        errorDiv.textContent = e.message;
-        errorDiv.style.display = 'block';
+        errorText.textContent = e.message;
+        errorDiv.classList.add('show');
+        btn.classList.remove('loading');
       }
     }
+
     document.addEventListener('keydown', e => { if (e.key === 'Enter') ingresar(); });
+
+    document.getElementById('login-btn').addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      const rect = this.getBoundingClientRect();
+      ripple.style.left = (e.clientX - rect.left) + 'px';
+      ripple.style.top  = (e.clientY - rect.top) + 'px';
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 700);
+    });
   </script>
 </body>
 </html>

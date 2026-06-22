@@ -4,42 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bruma Café — Caja</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/sistema.css">
   <link rel="stylesheet" href="css/caja.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
 </head>
 <body>
 
-  <nav class="navbar">
-    <span class="navbar-brand">☕ Bruma <span>Café</span></span>
-    <span class="navbar-spacer"></span>
-    <span class="navbar-user" id="nav-usuario">—</span>
-    <span class="navbar-rol"  id="nav-rol">—</span>
-    <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión →</span>
-  </nav>
+<nav class="navbar">
+  <div class="navbar-logo"><img src="../Imagenes/LOGO2.png" alt="Logo"></div>
+  <span class="navbar-brand">Bruma <span>Café</span></span>
+  <span class="navbar-spacer"></span>
+  <span class="navbar-user" id="nav-usuario">—</span>
+  <span class="navbar-divider"></span>
+  <span class="navbar-rol" id="nav-rol"><i class="ti ti-circle-filled dot"></i>—</span>
+  <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión <i class="ti ti-logout"></i></span>
+</nav>
 
-  <aside class="sidebar">
-    <div class="sidebar-section">Principal</div>
-    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">⊞</span> Dashboard</a>
-    <div class="sidebar-section">Operaciones</div>
-    <a href="ventas.html"    class="sidebar-item"><span class="sidebar-icon">🛒</span> Ventas</a>
-    <a href="caja.html"      class="sidebar-item active"><span class="sidebar-icon">💰</span> Caja</a>
-    <a href="productos.html" class="sidebar-item"><span class="sidebar-icon">📦</span> Productos</a>
-    <div class="sidebar-section">Abastecimiento</div>
-    <a href="compras.html"     class="sidebar-item"><span class="sidebar-icon">🚚</span> Compras</a>
-    <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon">🏭</span> Proveedores</a>
-    <div class="sidebar-section">Finanzas</div>
-    <a href="gastos.html"   class="sidebar-item"><span class="sidebar-icon">💸</span> Gastos</a>
-    <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon">📊</span> Reportes</a>
-    <div class="sidebar-section">Administración</div>
-    <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon">👥</span> Usuarios</a>
-  </aside>
+<aside class="sidebar">
+  <div class="sidebar-section">Principal</div>
+  <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-layout-dashboard"></i></span> Dashboard</a>
+
+  <div class="sidebar-section">Operaciones</div>
+  <a href="ventas.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-shopping-cart"></i></span> Ventas</a>
+  <a href="caja.html" class="sidebar-item active"><span class="sidebar-icon"><i class="ti ti-calculator"></i></span> Caja</a>
+  <a href="productos.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-box"></i></span> Productos</a>
+
+  <div class="sidebar-section">Abastecimiento</div>
+  <a href="compras.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-truck"></i></span> Compras</a>
+  <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-building-factory-2"></i></span> Proveedores</a>
+
+  <div class="sidebar-section">Finanzas</div>
+  <a href="gastos.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-receipt-2"></i></span> Gastos</a>
+  <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-chart-bar"></i></span> Reportes</a>
+
+  <div class="sidebar-section">Administración</div>
+  <a href="usuarios.html" class="sidebar-item" id="link-usuarios"><span class="sidebar-icon"><i class="ti ti-users"></i></span> Usuarios</a>
+</aside>
 
   <main class="main">
     <div class="page-title">Caja</div>
     <div class="page-sub">Control del turno de caja</div>
 
-    <!-- ESTADO CAJA -->
     <div class="caja-summary">
       <div class="caja-summary-card" id="card-estado">
         <div class="label">Estado</div>
@@ -56,10 +62,8 @@
       </div>
     </div>
 
-    <!-- GRID: ACCIONES + RESUMEN VISUAL -->
     <div class="caja-grid">
 
-      <!-- ACCIONES CAJA -->
       <div class="form-card">
         <h3><span class="form-card-icon" id="form-icon"><i class="ti ti-lock"></i></span> <span id="caja-form-titulo">Abrir caja</span></h3>
         <div class="form-group" id="grupo-monto">
@@ -72,7 +76,6 @@
         <p id="caja-msg"></p>
       </div>
 
-      <!-- TARJETA INFORMATIVA -->
       <div class="caja-info-card" id="info-card">
         <i class="ti ti-info-circle" id="info-icon"></i>
         <div class="info-titulo" id="info-titulo">Sin turno activo</div>
@@ -81,7 +84,6 @@
 
     </div>
 
-    <!-- MOVIMIENTOS -->
     <div class="table-card">
       <div class="table-toolbar">
         <span class="table-toolbar-dot"></span>
@@ -100,10 +102,12 @@
   </main>
 
   <script src="js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     if (!getToken()) window.location.href = 'login.html';
     document.getElementById('nav-usuario').textContent = getUsuario();
-    document.getElementById('nav-rol').textContent     = getRol();
+    document.getElementById('nav-rol').innerHTML = '<i class="ti ti-circle-filled dot"></i>' + getRol();
+    if (getRol() !== 'ADMIN') document.getElementById('link-usuarios').style.display = 'none';
 
     let cajaAbierta = false;
 
@@ -127,7 +131,7 @@
         document.getElementById('caja-form-titulo').textContent = cajaAbierta ? 'Cerrar caja' : 'Abrir caja';
         document.getElementById('btn-caja').innerHTML            = cajaAbierta ? '<i class="ti ti-lock"></i> Cerrar caja' : '<i class="ti ti-lock-open"></i> Abrir caja';
         document.getElementById('btn-caja').className            = cajaAbierta ? 'btn btn-danger' : 'btn btn-primary';
-        document.getElementById('grupo-monto').style.display     = cajaAbierta ? 'none' : 'flex';
+        document.getElementById('grupo-monto').style.display     = cajaAbierta ? 'none' : 'block';
         document.getElementById('form-icon').innerHTML            = cajaAbierta ? '<i class="ti ti-lock-open"></i>' : '<i class="ti ti-lock"></i>';
 
         const infoCard   = document.getElementById('info-card');
