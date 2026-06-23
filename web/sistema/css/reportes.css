@@ -9,7 +9,6 @@
 
 body { margin: 0; background-color: var(--bg-app); font-family: 'Plus Jakarta Sans', sans-serif; }
 
-/* Tarjetas de Resumen (Dashboard Style) */
 .report-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -40,7 +39,6 @@ body { margin: 0; background-color: var(--bg-app); font-family: 'Plus Jakarta Sa
   color: var(--primary);
 }
 
-/* Tabla de Reportes */
 .table-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -54,3 +52,12 @@ body { margin: 0; background-color: var(--bg-app); font-family: 'Plus Jakarta Sa
 table { width: 100%; border-collapse: collapse; }
 th { text-align: left; padding: 14px; font-size: 12px; color: var(--text-muted); border-bottom: 2px solid #F5F3F1; }
 td { padding: 14px; border-bottom: 1px solid #F5F3F1; font-size: 14px; }
+tr:hover td { background: #FAFAF8; }
+
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 700; }
+.badge-ok     { background: #E1F5EE; color: #04342C; }
+.badge-danger { background: #FCEBEB; color: #501313; }
+
+@media (max-width: 992px) {
+  .report-grid { grid-template-columns: repeat(2, 1fr); }
+}

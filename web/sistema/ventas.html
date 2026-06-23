@@ -42,258 +42,365 @@
   <a href="usuarios.html" class="sidebar-item" id="link-usuarios"><span class="sidebar-icon"><i class="ti ti-users"></i></span> Usuarios</a>
 </aside>
 
-  <main class="main">
-    <div class="page-title">Ventas</div>
-    <div class="page-sub">Registrar y consultar ventas del día</div>
+<main class="main">
+  <div class="page-title">Ventas</div>
+  <div class="page-sub">Registrar y consultar ventas del día</div>
 
-    <div class="ventas-summary">
-      <div class="ventas-summary-card destacada">
-        <div class="label">Total vendido hoy</div>
-        <div class="value" id="resumen-total">S/ 0.00</div>
-        <div class="sub" id="resumen-variacion">cargando...</div>
+  <div class="ventas-summary">
+    <div class="ventas-summary-card destacada">
+      <div class="label">Total vendido hoy</div>
+      <div class="value" id="resumen-total">S/ 0.00</div>
+      <div class="sub" id="resumen-variacion">cargando...</div>
+    </div>
+    <div class="ventas-summary-card">
+      <div class="label">Producto top</div>
+      <div class="value value-sm" id="resumen-top">—</div>
+      <div class="sub ok" id="resumen-top-sub">cargando...</div>
+    </div>
+    <div class="ventas-summary-card">
+      <div class="label">Ticket promedio</div>
+      <div class="value" id="resumen-promedio">S/ 0.00</div>
+      <div class="sub">por venta</div>
+    </div>
+  </div>
+
+  <div class="venta-grid">
+
+    <div class="form-card">
+      <h3><span class="form-card-icon"><i class="ti ti-shopping-cart-plus"></i></span> Nueva venta</h3>
+
+      <label>Producto</label>
+      <select id="venta-producto">
+        <option value="">Seleccionar producto...</option>
+      </select>
+
+      <div class="form-grid-2">
+        <div>
+          <label>Cantidad</label>
+          <input type="number" id="venta-cantidad" placeholder="1" min="1" value="1">
+        </div>
+        <div>
+          <label>Stock disponible</label>
+          <div class="stock-indicador" id="venta-stock">
+            <i class="ti ti-circle-dashed"></i> Selecciona un producto
+          </div>
+        </div>
       </div>
-      <div class="ventas-summary-card">
-        <div class="label">Producto top</div>
-        <div class="value value-sm" id="resumen-top">—</div>
-        <div class="sub ok" id="resumen-top-sub">cargando...</div>
+
+      <button class="btn-agregar" onclick="agregarProducto()">
+        <i class="ti ti-plus"></i> Agregar producto a la venta
+      </button>
+
+      <div id="lista-items" class="lista-items" style="display:none;">
+        <div class="lista-items-header">
+          <span>Productos agregados</span>
+          <span id="items-count" class="items-count">0 items</span>
+        </div>
+        <div id="items-container"></div>
       </div>
-      <div class="ventas-summary-card">
-        <div class="label">Ticket promedio</div>
-        <div class="value" id="resumen-promedio">S/ 0.00</div>
-        <div class="sub">por venta</div>
+
+      <label style="margin-top:16px;">Método de pago</label>
+      <div class="metodo-grid" id="metodo-grid">
+        <div class="metodo-opcion active" data-metodo="EFECTIVO">
+          <i class="ti ti-cash"></i>
+          <span>Efectivo</span>
+        </div>
+        <div class="metodo-opcion" data-metodo="YAPE">
+          <i class="ti ti-qrcode"></i>
+          <span>Yape</span>
+        </div>
+        <div class="metodo-opcion" data-metodo="PLIN">
+          <i class="ti ti-qrcode"></i>
+          <span>Plin</span>
+        </div>
+        <div class="metodo-opcion" data-metodo="TARJETA">
+          <i class="ti ti-credit-card"></i>
+          <span>Tarjeta</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="registrarVenta()">
+          <i class="ti ti-check"></i> Registrar venta
+        </button>
+        <button class="btn btn-secondary" onclick="limpiarVenta()">Limpiar</button>
+      </div>
+      <p id="venta-msg"></p>
+    </div>
+
+    <div class="recibo-card">
+      <div class="recibo-header">
+        <i class="ti ti-receipt"></i>
+        <span>Vista previa</span>
+      </div>
+      <div id="recibo-items">
+        <div class="recibo-vacio">Agrega productos a la venta</div>
+      </div>
+      <div class="recibo-total">
+        <span>Total</span>
+        <span id="recibo-total-monto">S/ 0.00</span>
       </div>
     </div>
 
-    <div class="venta-grid">
+  </div>
 
-      <div class="form-card">
-        <h3><span class="form-card-icon"><i class="ti ti-shopping-cart-plus"></i></span> Nueva venta</h3>
-
-        <label>Producto</label>
-        <select id="venta-producto">
-          <option value="">Seleccionar producto...</option>
-        </select>
-
-        <div class="form-grid-2">
-          <div>
-            <label>Cantidad</label>
-            <input type="number" id="venta-cantidad" placeholder="1" min="1" value="1">
-          </div>
-          <div>
-            <label>Stock disponible</label>
-            <div class="stock-indicador" id="venta-stock">
-              <i class="ti ti-circle-dashed"></i> Selecciona un producto
-            </div>
-          </div>
-        </div>
-
-        <label>Método de pago</label>
-        <div class="metodo-grid" id="metodo-grid">
-          <div class="metodo-opcion active" data-metodo="EFECTIVO">
-            <i class="ti ti-cash"></i>
-            <span>Efectivo</span>
-          </div>
-          <div class="metodo-opcion" data-metodo="YAPE">
-            <i class="ti ti-qrcode"></i>
-            <span>Yape</span>
-          </div>
-          <div class="metodo-opcion" data-metodo="PLIN">
-            <i class="ti ti-qrcode"></i>
-            <span>Plin</span>
-          </div>
-          <div class="metodo-opcion" data-metodo="TARJETA">
-            <i class="ti ti-credit-card"></i>
-            <span>Tarjeta</span>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn btn-primary" onclick="registrarVenta()"><i class="ti ti-check"></i> Registrar venta</button>
-          <button class="btn btn-secondary" onclick="limpiarVenta()">Limpiar</button>
-        </div>
-        <p id="venta-msg"></p>
-      </div>
-
-      <div class="recibo-card">
-        <div class="recibo-header">
-          <i class="ti ti-receipt"></i>
-          <span>Vista previa</span>
-        </div>
-        <div class="recibo-linea" id="recibo-detalle">
-          <span class="recibo-vacio">Selecciona un producto y cantidad</span>
-        </div>
-        <div class="recibo-total">
-          <span>Total</span>
-          <span id="recibo-total-monto">S/ 0.00</span>
-        </div>
-      </div>
-
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="table-toolbar-dot"></span>
+      <span class="table-toolbar-title">Ventas del día</span>
+      <span class="table-toolbar-count" id="contador-ventas">0 registros</span>
     </div>
-
-    <div class="table-card">
-      <div class="table-toolbar">
-        <span class="table-toolbar-dot"></span>
-        <span class="table-toolbar-title">Ventas del día</span>
-        <span class="table-toolbar-count" id="contador-ventas">0 registros</span>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th><th>Productos</th><th>Total</th>
-            <th>Método</th><th>Estado</th><th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-ventas">
-          <tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </main>
-
-  <script src="js/api.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    if (!getToken()) window.location.href = 'login.html';
-    document.getElementById('nav-usuario').textContent = getUsuario();
-    document.getElementById('nav-rol').innerHTML = '<i class="ti ti-circle-filled dot"></i>' + getRol();
-    if (getRol() !== 'ADMIN') document.getElementById('link-usuarios').style.display = 'none';
-
-    let productos = [];
-    let metodoSeleccionado = 'EFECTIVO';
-
-    const ICONOS_METODO = {
-      EFECTIVO: 'ti-cash',
-      YAPE: 'ti-qrcode',
-      PLIN: 'ti-qrcode',
-      TARJETA: 'ti-credit-card'
-    };
-
-    document.querySelectorAll('.metodo-opcion').forEach(op => {
-      op.addEventListener('click', () => {
-        document.querySelectorAll('.metodo-opcion').forEach(o => o.classList.remove('active'));
-        op.classList.add('active');
-        metodoSeleccionado = op.dataset.metodo;
-      });
-    });
-
-    async function cargarProductos() {
-      productos = await Productos.listar();
-      const sel = document.getElementById('venta-producto');
-      productos.forEach(p => {
-        sel.innerHTML += `<option value="${p.id}" data-precio="${p.precio}" data-stock="${p.stock}" data-nombre="${p.nombre}">${p.nombre} — S/ ${p.precio}</option>`;
-      });
-    }
-
-    document.getElementById('venta-producto').addEventListener('change', actualizarVista);
-    document.getElementById('venta-cantidad').addEventListener('input', actualizarVista);
-
-    function actualizarVista() {
-      const sel    = document.getElementById('venta-producto');
-      const opt    = sel.selectedOptions[0];
-      const precio = parseFloat(opt?.dataset.precio || 0);
-      const stock  = parseInt(opt?.dataset.stock || 0);
-      const nombre = opt?.dataset.nombre;
-      const cant   = parseInt(document.getElementById('venta-cantidad').value || 0);
-      const total  = precio * cant;
-
-      const stockDiv = document.getElementById('venta-stock');
-      if (!opt?.value) {
-        stockDiv.innerHTML = '<i class="ti ti-circle-dashed"></i> Selecciona un producto';
-        stockDiv.className = 'stock-indicador';
-      } else if (stock < cant) {
-        stockDiv.innerHTML = `<i class="ti ti-alert-triangle"></i> Solo ${stock} disponibles`;
-        stockDiv.className = 'stock-indicador warn';
-      } else if (stock < 5) {
-        stockDiv.innerHTML = `<i class="ti ti-alert-triangle"></i> ${stock} unidades (stock bajo)`;
-        stockDiv.className = 'stock-indicador warn';
-      } else {
-        stockDiv.innerHTML = `<i class="ti ti-circle-check"></i> ${stock} unidades`;
-        stockDiv.className = 'stock-indicador ok';
-      }
-
-      const detalleDiv = document.getElementById('recibo-detalle');
-      if (!opt?.value || !cant) {
-        detalleDiv.innerHTML = '<span class="recibo-vacio">Selecciona un producto y cantidad</span>';
-      } else {
-        detalleDiv.innerHTML = `<span>${nombre} x${cant}</span><span>S/ ${total.toFixed(2)}</span>`;
-      }
-      document.getElementById('recibo-total-monto').textContent = 'S/ ' + total.toFixed(2);
-    }
-
-    function actualizarResumen(ventas) {
-      const activas  = ventas.filter(v => v.estado === 'ACTIVA');
-      const total    = activas.reduce((s, v) => s + (v.total || 0), 0);
-      const cantidad = activas.length;
-      const promedio = cantidad > 0 ? total / cantidad : 0;
-
-      const conteoProductos = {};
-      activas.forEach(v => v.detalles?.forEach(d => {
-        conteoProductos[d.nombreProducto] = (conteoProductos[d.nombreProducto] || 0) + d.cantidad;
-      }));
-      const topEntry = Object.entries(conteoProductos).sort((a,b) => b[1]-a[1])[0];
-
-      document.getElementById('resumen-total').textContent     = 'S/ ' + total.toFixed(2);
-      document.getElementById('resumen-promedio').textContent  = 'S/ ' + promedio.toFixed(2);
-      document.getElementById('resumen-variacion').textContent = cantidad > 0 ? cantidad + ' transacciones activas' : 'Sin ventas activas';
-      document.getElementById('resumen-top').textContent       = topEntry ? topEntry[0] : '—';
-      document.getElementById('resumen-top-sub').textContent   = topEntry ? `vendido ${topEntry[1]} veces hoy` : 'sin datos aún';
-      document.getElementById('contador-ventas').textContent   = ventas.length + ' registros';
-    }
-
-    async function cargarVentas() {
-      const ventas = await Ventas.listar();
-      const tbody  = document.getElementById('tabla-ventas');
-
-      actualizarResumen(ventas);
-
-      if (!ventas.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Sin ventas hoy</td></tr>';
-        return;
-      }
-      tbody.innerHTML = ventas.reverse().map(v => `
+    <table>
+      <thead>
         <tr>
-          <td style="color:#888;">#${v.id}</td>
-          <td>${v.detalles?.map(d => d.nombreProducto + ' x' + d.cantidad).join(', ') || '—'}</td>
-          <td style="font-weight:600;">S/ ${v.total?.toFixed(2)}</td>
-          <td><i class="ti ${ICONOS_METODO[v.metodoPago] || 'ti-cash'}" style="margin-right:4px;"></i>${v.metodoPago || '—'}</td>
-          <td><span class="badge ${v.estado==='ACTIVA'?'badge-ok':'badge-danger'}">${v.estado}</span></td>
-          <td>${v.estado==='ACTIVA' ? `<button class="btn btn-danger btn-sm" onclick="anularVenta(${v.id})">Anular</button>` : '—'}</td>
-        </tr>`).join('');
+          <th>#</th><th>Productos</th><th>Total</th>
+          <th>Método</th><th>Estado</th><th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-ventas">
+        <tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  if (!getToken()) window.location.href = 'login.html';
+  document.getElementById('nav-usuario').textContent = getUsuario();
+  document.getElementById('nav-rol').innerHTML = '<i class="ti ti-circle-filled dot"></i>' + getRol();
+  if (getRol() !== 'ADMIN') document.getElementById('link-usuarios').style.display = 'none';
+
+  let productos = [];
+  let metodoSeleccionado = 'EFECTIVO';
+  let itemsVenta = [];
+
+  const ICONOS_METODO = {
+    EFECTIVO: 'ti-cash', YAPE: 'ti-qrcode', PLIN: 'ti-qrcode', TARJETA: 'ti-credit-card'
+  };
+
+  document.querySelectorAll('.metodo-opcion').forEach(op => {
+    op.addEventListener('click', () => {
+      document.querySelectorAll('.metodo-opcion').forEach(o => o.classList.remove('active'));
+      op.classList.add('active');
+      metodoSeleccionado = op.dataset.metodo;
+    });
+  });
+
+  async function cargarProductos() {
+    productos = await Productos.listar();
+    const sel = document.getElementById('venta-producto');
+    productos.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.dataset.precio = p.precio;
+      opt.dataset.stock  = p.stock;
+      opt.dataset.nombre = p.nombre;
+      opt.textContent    = p.nombre + ' — S/ ' + p.precio;
+      sel.appendChild(opt);
+    });
+  }
+
+  document.getElementById('venta-producto').addEventListener('change', actualizarStock);
+  document.getElementById('venta-cantidad').addEventListener('input', actualizarStock);
+
+  function actualizarStock() {
+    const sel   = document.getElementById('venta-producto');
+    const opt   = sel.selectedOptions[0];
+    const stock = parseInt(opt?.dataset.stock || 0);
+    const cant  = parseInt(document.getElementById('venta-cantidad').value || 0);
+    const div   = document.getElementById('venta-stock');
+
+    if (!opt?.value) {
+      div.innerHTML = '<i class="ti ti-circle-dashed"></i> Selecciona un producto';
+      div.className = 'stock-indicador';
+    } else if (stock < cant) {
+      div.innerHTML = `<i class="ti ti-alert-triangle"></i> Solo ${stock} disponibles`;
+      div.className = 'stock-indicador warn';
+    } else if (stock < 5) {
+      div.innerHTML = `<i class="ti ti-alert-triangle"></i> ${stock} unidades (stock bajo)`;
+      div.className = 'stock-indicador warn';
+    } else {
+      div.innerHTML = `<i class="ti ti-circle-check"></i> ${stock} unidades`;
+      div.className = 'stock-indicador ok';
+    }
+  }
+
+  function agregarProducto() {
+    const sel      = document.getElementById('venta-producto');
+    const opt      = sel.selectedOptions[0];
+    const cantidad = parseInt(document.getElementById('venta-cantidad').value || 0);
+    const msg      = document.getElementById('venta-msg');
+
+    if (!opt?.value) {
+      msg.className = 'msg-err'; msg.textContent = 'Selecciona un producto.'; return;
+    }
+    if (!cantidad || cantidad < 1) {
+      msg.className = 'msg-err'; msg.textContent = 'La cantidad debe ser mínimo 1.'; return;
+    }
+    const stock = parseInt(opt.dataset.stock || 0);
+    if (cantidad > stock) {
+      msg.className = 'msg-err';
+      msg.textContent = `Stock insuficiente. Solo hay ${stock} unidades.`; return;
     }
 
-    async function registrarVenta() {
-      const productoId = document.getElementById('venta-producto').value;
-      const cantidad    = parseInt(document.getElementById('venta-cantidad').value);
-      const msg         = document.getElementById('venta-msg');
+    msg.textContent = '';
+    const productoId = parseInt(opt.value);
+    const nombre     = opt.dataset.nombre;
+    const precio     = parseFloat(opt.dataset.precio);
 
-      if (!productoId || !cantidad) {
-        msg.className = 'msg-err'; msg.textContent = 'Selecciona un producto y cantidad.'; return;
-      }
-      try {
-        await Ventas.registrar({
-          metodoPago: metodoSeleccionado,
-          detalles: [{ productoId: parseInt(productoId), cantidad }]
-        });
-        msg.className = 'msg-ok'; msg.textContent = '✓ Venta registrada correctamente.';
-        limpiarVenta(); cargarVentas();
-      } catch(e) { msg.className = 'msg-err'; msg.textContent = e.message; }
+    const existente = itemsVenta.find(i => i.productoId === productoId);
+    if (existente) {
+      existente.cantidad += cantidad;
+    } else {
+      itemsVenta.push({ productoId, nombre, precio, cantidad });
     }
 
-    async function anularVenta(id) {
-      if (!confirm('¿Anular esta venta?')) return;
-      try { await Ventas.anular(id); cargarVentas(); }
-      catch(e) { alert(e.message); }
+    sel.value = '';
+    document.getElementById('venta-cantidad').value = 1;
+    actualizarStock();
+    renderItems();
+    renderRecibo();
+  }
+
+  function eliminarItem(productoId) {
+    itemsVenta = itemsVenta.filter(i => i.productoId !== productoId);
+    renderItems();
+    renderRecibo();
+  }
+
+  function cambiarCantidad(productoId, val) {
+    const item = itemsVenta.find(i => i.productoId === productoId);
+    if (!item) return;
+    const n = parseInt(val);
+    if (!n || n < 1) return;
+    item.cantidad = n;
+    renderRecibo();
+  }
+
+  function renderItems() {
+    const container = document.getElementById('items-container');
+    const listaDiv  = document.getElementById('lista-items');
+    const countSpan = document.getElementById('items-count');
+
+    if (!itemsVenta.length) {
+      listaDiv.style.display = 'none';
+      return;
+    }
+    listaDiv.style.display = 'block';
+    countSpan.textContent = itemsVenta.length + ' item' + (itemsVenta.length > 1 ? 's' : '');
+
+    container.innerHTML = itemsVenta.map(item => `
+      <div class="item-fila">
+        <span class="item-nombre">${item.nombre}</span>
+        <input type="number" min="1" value="${item.cantidad}" class="item-cant-input"
+          onchange="cambiarCantidad(${item.productoId}, this.value)">
+        <span class="item-subtotal">S/ ${(item.precio * item.cantidad).toFixed(2)}</span>
+        <button class="item-delete" onclick="eliminarItem(${item.productoId})">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>`).join('');
+  }
+
+  function renderRecibo() {
+    const container = document.getElementById('recibo-items');
+    const totalSpan = document.getElementById('recibo-total-monto');
+
+    if (!itemsVenta.length) {
+      container.innerHTML = '<div class="recibo-vacio">Agrega productos a la venta</div>';
+      totalSpan.textContent = 'S/ 0.00';
+      return;
     }
 
-    function limpiarVenta() {
-      document.getElementById('venta-producto').value = '';
-      document.getElementById('venta-cantidad').value = '1';
-      document.getElementById('venta-msg').textContent = '';
-      actualizarVista();
-    }
+    let total = 0;
+    container.innerHTML = itemsVenta.map(item => {
+      const sub = item.precio * item.cantidad;
+      total += sub;
+      return `<div class="recibo-linea">
+        <span>${item.nombre} x${item.cantidad}</span>
+        <span>S/ ${sub.toFixed(2)}</span>
+      </div>`;
+    }).join('');
 
-    cargarProductos();
-    cargarVentas();
-  </script>
+    totalSpan.textContent = 'S/ ' + total.toFixed(2);
+  }
+
+  async function registrarVenta() {
+    const msg = document.getElementById('venta-msg');
+    if (!itemsVenta.length) {
+      msg.className = 'msg-err'; msg.textContent = 'Agrega al menos un producto.'; return;
+    }
+    try {
+      await Ventas.registrar({
+        metodoPago: metodoSeleccionado,
+        detalles: itemsVenta.map(i => ({ productoId: i.productoId, cantidad: i.cantidad }))
+      });
+      msg.className = 'msg-ok'; msg.textContent = '✓ Venta registrada correctamente.';
+      limpiarVenta();
+      cargarVentas();
+    } catch(e) {
+      msg.className = 'msg-err'; msg.textContent = e.message;
+    }
+  }
+
+  async function anularVenta(id) {
+    if (!confirm('¿Anular esta venta?')) return;
+    try { await Ventas.anular(id); cargarVentas(); }
+    catch(e) { alert(e.message); }
+  }
+
+  function limpiarVenta() {
+    itemsVenta = [];
+    document.getElementById('venta-producto').value = '';
+    document.getElementById('venta-cantidad').value = 1;
+    document.getElementById('venta-msg').textContent = '';
+    actualizarStock();
+    renderItems();
+    renderRecibo();
+  }
+
+  function actualizarResumen(ventas) {
+    const activas  = ventas.filter(v => v.estado === 'ACTIVA');
+    const total    = activas.reduce((s, v) => s + (v.total || 0), 0);
+    const cantidad = activas.length;
+    const promedio = cantidad > 0 ? total / cantidad : 0;
+
+    const conteoProductos = {};
+    activas.forEach(v => v.detalles?.forEach(d => {
+      conteoProductos[d.nombreProducto] = (conteoProductos[d.nombreProducto] || 0) + d.cantidad;
+    }));
+    const topEntry = Object.entries(conteoProductos).sort((a, b) => b[1] - a[1])[0];
+
+    document.getElementById('resumen-total').textContent     = 'S/ ' + total.toFixed(2);
+    document.getElementById('resumen-promedio').textContent  = 'S/ ' + promedio.toFixed(2);
+    document.getElementById('resumen-variacion').textContent = cantidad > 0 ? cantidad + ' transacciones activas' : 'Sin ventas activas';
+    document.getElementById('resumen-top').textContent       = topEntry ? topEntry[0] : '—';
+    document.getElementById('resumen-top-sub').textContent   = topEntry ? `vendido ${topEntry[1]} veces hoy` : 'sin datos aún';
+    document.getElementById('contador-ventas').textContent   = ventas.length + ' registros';
+  }
+
+  async function cargarVentas() {
+    const ventas = await Ventas.listar();
+    const tbody  = document.getElementById('tabla-ventas');
+    actualizarResumen(ventas);
+    if (!ventas.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">Sin ventas hoy</td></tr>';
+      return;
+    }
+    tbody.innerHTML = ventas.reverse().map(v => `
+      <tr>
+        <td style="color:#888;">#${v.id}</td>
+        <td>${v.detalles?.map(d => d.nombreProducto + ' x' + d.cantidad).join(', ') || '—'}</td>
+        <td style="font-weight:600;">S/ ${v.total?.toFixed(2)}</td>
+        <td><i class="ti ${ICONOS_METODO[v.metodoPago] || 'ti-cash'}" style="margin-right:4px;"></i>${v.metodoPago || '—'}</td>
+        <td><span class="badge ${v.estado === 'ACTIVA' ? 'badge-ok' : 'badge-danger'}">${v.estado}</span></td>
+        <td>${v.estado === 'ACTIVA' ? `<button class="btn btn-danger btn-sm" onclick="anularVenta(${v.id})">Anular</button>` : '—'}</td>
+      </tr>`).join('');
+  }
+
+  cargarProductos();
+  cargarVentas();
+</script>
 </body>
 </html>

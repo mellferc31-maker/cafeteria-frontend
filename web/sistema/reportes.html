@@ -2,42 +2,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bruma Café — Reportes</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/sistema.css">
   <link rel="stylesheet" href="css/reportes.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css">
 </head>
 <body>
 
-  
 <nav class="navbar">
-  <span class="navbar-brand">
-    <i class="ti ti-coffee brand-icon"></i> Bruma <span>Café</span>
-  </span>
+  <div class="navbar-logo"><img src="../Imagenes/LOGO2.png" alt="Logo"></div>
+  <span class="navbar-brand">Bruma <span>Café</span></span>
   <span class="navbar-spacer"></span>
   <span class="navbar-user" id="nav-usuario">—</span>
-  <span class="navbar-rol"  id="nav-rol">—</span>
-  <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión <i class="ti ti-logout icon-right"></i></span>
+  <span class="navbar-divider"></span>
+  <span class="navbar-rol" id="nav-rol"><i class="ti ti-circle-filled dot"></i>—</span>
+  <span class="navbar-logout" onclick="cerrarSesion()">Cerrar sesión <i class="ti ti-logout"></i></span>
 </nav>
 
 <aside class="sidebar">
   <div class="sidebar-section">Principal</div>
   <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-layout-dashboard"></i></span> Dashboard</a>
-  
+
   <div class="sidebar-section">Operaciones</div>
   <a href="ventas.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-shopping-cart"></i></span> Ventas</a>
   <a href="caja.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-calculator"></i></span> Caja</a>
   <a href="productos.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-box"></i></span> Productos</a>
-  
+
   <div class="sidebar-section">Abastecimiento</div>
   <a href="compras.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-truck"></i></span> Compras</a>
   <a href="proveedores.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-building-factory-2"></i></span> Proveedores</a>
-  
+
   <div class="sidebar-section">Finanzas</div>
   <a href="gastos.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-receipt-2"></i></span> Gastos</a>
-  <a href="reportes.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-chart-bar"></i></span> Reportes</a>
-  
+  <a href="reportes.html" class="sidebar-item active"><span class="sidebar-icon"><i class="ti ti-chart-bar"></i></span> Reportes</a>
+
   <div class="sidebar-section">Administración</div>
-  <a href="usuarios.html" class="sidebar-item"><span class="sidebar-icon"><i class="ti ti-users"></i></span> Usuarios</a>
+  <a href="usuarios.html" class="sidebar-item" id="link-usuarios"><span class="sidebar-icon"><i class="ti ti-users"></i></span> Usuarios</a>
 </aside>
 
   <main class="main">
@@ -77,5 +79,57 @@
       </table>
     </div>
   </main>
+
+  <script src="js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    if (!getToken()) window.location.href = 'login.html';
+    document.getElementById('nav-usuario').textContent = getUsuario();
+    document.getElementById('nav-rol').innerHTML = '<i class="ti ti-circle-filled dot"></i>' + getRol();
+    if (getRol() !== 'ADMIN') document.getElementById('link-usuarios').style.display = 'none';
+
+    async function cargarReportes() {
+      try {
+        const ventasHoy = await Reportes.ventasHoy();
+        const totalHoy  = ventasHoy.reduce((s, v) => s + (v.total || 0), 0);
+        document.getElementById('rep-ventas-hoy').textContent = 'S/ ' + totalHoy.toFixed(2);
+      } catch(e) { console.warn('Ventas hoy:', e.message); }
+
+      try {
+        const ventasSemana = await Ventas.listar();
+        const hace7dias = new Date();
+        hace7dias.setDate(hace7dias.getDate() - 7);
+        const semana = ventasSemana.filter(v => new Date(v.fecha) >= hace7dias);
+        const totalSemana = semana.reduce((s, v) => s + (v.total || 0), 0);
+        document.getElementById('rep-ventas-semana').textContent = 'S/ ' + totalSemana.toFixed(2);
+
+        const tbody = document.getElementById('tabla-ventas-semana');
+        if (!semana.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">Sin ventas esta semana</td></tr>';
+        } else {
+          tbody.innerHTML = semana.reverse().map(v => `
+            <tr>
+              <td>#${v.id}</td>
+              <td>${new Date(v.fecha).toLocaleDateString('es-PE')}</td>
+              <td style="font-weight:600;">S/ ${v.total?.toFixed(2)}</td>
+              <td>${v.metodoPago || '—'}</td>
+              <td><span class="badge ${v.estado==='ACTIVA' ? 'badge-ok' : 'badge-danger'}">${v.estado}</span></td>
+            </tr>`).join('');
+        }
+      } catch(e) { console.warn('Ventas semana:', e.message); }
+
+      try {
+        const totalGastos = await Reportes.totalGastos();
+        document.getElementById('rep-gastos').textContent = 'S/ ' + (totalGastos || 0).toFixed(2);
+      } catch(e) { console.warn('Gastos:', e.message); }
+
+      try {
+        const totalFijos = await Reportes.totalGastosFijos();
+        document.getElementById('rep-fijos').textContent = 'S/ ' + (totalFijos || 0).toFixed(2);
+      } catch(e) { console.warn('Gastos fijos:', e.message); }
+    }
+
+    cargarReportes();
+  </script>
 </body>
 </html>
